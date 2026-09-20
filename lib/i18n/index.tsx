@@ -55,12 +55,13 @@ function detectLocale(): Locale {
     if (lang.startsWith("zh")) return "zh-CN";
     if (lang.startsWith("ja")) return "ja";
   }
-  return "en";
+  return "zh-CN";
 }
 
 function getLocale(): Locale {
-  // During SSR or the initial hydration pass, return "en" to guarantee server/client HTML match
-  if (typeof document === "undefined" || !state.hydrated) return "en";
+  // Chinese is the product default during SSR and first hydration. A stored
+  // explicit language choice still takes over immediately after hydration.
+  if (typeof document === "undefined" || !state.hydrated) return "zh-CN";
   if (state.locale === null) state.locale = detectLocale();
   return state.locale;
 }
@@ -110,7 +111,7 @@ function subscribe(cb: () => void): () => void {
 }
 
 function getServerSnapshot(): Locale {
-  return "en";
+  return "zh-CN";
 }
 
 /** Locale state + translator. Components re-render on language switch because
