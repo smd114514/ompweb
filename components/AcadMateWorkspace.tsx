@@ -460,15 +460,15 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
           transition: sidebarResizing ? "none" : "width var(--dur-med) var(--ease-out-warm)",
         }}
       >
-        <div style={{ width: sidebarWidth, height: "100%", display: "flex", flexDirection: "column" }}>
-        <div ref={sidebarMenuRef} style={{ position: "relative", padding: 18, borderBottom: "1px solid var(--border)" }}>
+        <div className="academate-sidebar-content" style={{ width: sidebarWidth, height: "100%", display: "flex", flexDirection: "column" }}>
+        <div ref={sidebarMenuRef} style={{ position: "relative", padding: 12, borderBottom: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 9 }}><BookOpen size={18} color="var(--accent)" /><strong className="display-serif" style={{ fontSize: 20 }}>AcadMate</strong></div>
           <button
             type="button"
             onClick={() => { setSidebarMenuOpen((open) => !open); setExternalLinksMenuOpen(false); }}
             aria-expanded={sidebarMenuOpen}
             aria-haspopup="menu"
-            style={{ ...secondaryButtonStyle, width: "100%", marginTop: 12, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start" }}
+            style={{ ...secondaryButtonStyle, minHeight: 30, width: "100%", marginTop: 8, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start" }}
           >
             <Menu size={15} />菜单
           </button>
@@ -476,16 +476,16 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
             type="button"
             onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isProfilePage ? "/academate" : "/academate/profile"); }}
             aria-current={isProfilePage ? "page" : undefined}
-            style={{ ...secondaryButtonStyle, width: "100%", marginTop: 8, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isProfilePage ? "var(--bg-selected)" : "transparent", color: isProfilePage ? "var(--text)" : "var(--text-muted)" }}
+            style={{ ...secondaryButtonStyle, minHeight: 30, width: "100%", marginTop: 4, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isProfilePage ? "var(--bg-selected)" : "transparent", color: isProfilePage ? "var(--text)" : "var(--text-muted)" }}
           >
             <CircleUserRound size={15} />个人中心
           </button>
-          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isMemoryPage ? "/academate" : "/academate/memory"); }} aria-current={isMemoryPage ? "page" : undefined} style={{ ...secondaryButtonStyle, width: "100%", marginTop: 8, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isMemoryPage ? "var(--bg-selected)" : "transparent", color: isMemoryPage ? "var(--text)" : "var(--text-muted)" }}><Brain size={15} />记忆</button>
-          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isDocumentsPage ? "/academate" : "/academate/files"); }} aria-current={isDocumentsPage ? "page" : undefined} style={{ ...secondaryButtonStyle, width: "100%", marginTop: 8, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isDocumentsPage ? "var(--bg-selected)" : "transparent", color: isDocumentsPage ? "var(--text)" : "var(--text-muted)" }}><FileText size={15} />已导入文件</button>
-          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isCloudPage ? "/academate" : "/academate/cloud"); }} aria-current={isCloudPage ? "page" : undefined} style={{ ...secondaryButtonStyle, width: "100%", marginTop: 8, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isCloudPage ? "var(--bg-selected)" : "transparent", color: isCloudPage ? "var(--text)" : "var(--text-muted)" }}><Orbit size={15} />星图</button>
-          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isHotTopicsPage ? "/academate" : "/academate/hot-topics"); }} aria-current={isHotTopicsPage ? "page" : undefined} style={{ ...secondaryButtonStyle, width: "100%", marginTop: 8, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isHotTopicsPage ? "var(--bg-selected)" : "transparent", color: isHotTopicsPage ? "var(--text)" : "var(--text-muted)" }}><Flame size={15} />近期热点</button>
-          <div style={{ position: "relative", marginTop: 8 }}>
-            <button type="button" onClick={() => { setExternalLinksMenuOpen((open) => !open); setSidebarMenuOpen(false); }} aria-expanded={externalLinksMenuOpen} aria-haspopup="menu" style={{ ...secondaryButtonStyle, width: "100%", display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start" }}><ExternalLink size={15} />外部链接</button>
+          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isMemoryPage ? "/academate" : "/academate/memory"); }} aria-current={isMemoryPage ? "page" : undefined} style={{ ...secondaryButtonStyle, minHeight: 30, width: "100%", marginTop: 4, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isMemoryPage ? "var(--bg-selected)" : "transparent", color: isMemoryPage ? "var(--text)" : "var(--text-muted)" }}><Brain size={15} />记忆</button>
+          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isDocumentsPage ? "/academate" : "/academate/files"); }} aria-current={isDocumentsPage ? "page" : undefined} style={{ ...secondaryButtonStyle, minHeight: 30, width: "100%", marginTop: 4, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isDocumentsPage ? "var(--bg-selected)" : "transparent", color: isDocumentsPage ? "var(--text)" : "var(--text-muted)" }}><FileText size={15} />已导入文件</button>
+          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isCloudPage ? "/academate" : "/academate/cloud"); }} aria-current={isCloudPage ? "page" : undefined} style={{ ...secondaryButtonStyle, minHeight: 30, width: "100%", marginTop: 4, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isCloudPage ? "var(--bg-selected)" : "transparent", color: isCloudPage ? "var(--text)" : "var(--text-muted)" }}><Orbit size={15} />星图</button>
+          <button type="button" onClick={() => { setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); router.push(isHotTopicsPage ? "/academate" : "/academate/hot-topics"); }} aria-current={isHotTopicsPage ? "page" : undefined} style={{ ...secondaryButtonStyle, minHeight: 30, width: "100%", marginTop: 4, display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start", background: isHotTopicsPage ? "var(--bg-selected)" : "transparent", color: isHotTopicsPage ? "var(--text)" : "var(--text-muted)" }}><Flame size={15} />近期热点</button>
+          <div style={{ position: "relative", marginTop: 4 }}>
+            <button type="button" onClick={() => { setExternalLinksMenuOpen((open) => !open); setSidebarMenuOpen(false); }} aria-expanded={externalLinksMenuOpen} aria-haspopup="menu" style={{ ...secondaryButtonStyle, minHeight: 30, width: "100%", display: "flex", alignItems: "center", gap: 7, justifyContent: "flex-start" }}><ExternalLink size={15} />外部链接</button>
             {externalLinksMenuOpen && <div role="menu" aria-label="外部链接" style={{ position: "absolute", zIndex: 40, top: 0, left: "calc(100% + 8px)", width: 220, padding: 6, display: "grid", gap: 3, background: "var(--bg-panel)", border: "1px solid var(--border)", borderRadius: "var(--radius-control)", boxShadow: "var(--shadow-pop)" }}>
               <a role="menuitem" href="https://www.zotero.org/" target="_blank" rel="noreferrer" style={{ ...secondaryButtonStyle, border: 0, justifyContent: "space-between", display: "flex", alignItems: "center", textDecoration: "none" }}><span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}><BookOpen size={15} />Zotero</span><ExternalLink size={13} /></a>
               <a role="menuitem" href="https://github.com/" target="_blank" rel="noreferrer" style={{ ...secondaryButtonStyle, border: 0, justifyContent: "space-between", display: "flex", alignItems: "center", textDecoration: "none" }}><span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}><GitFork size={15} />GitHub</span><ExternalLink size={13} /></a>
@@ -494,8 +494,9 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
           {sidebarMenuOpen && (
             <div
               role="menu"
-              style={{ position: "absolute", top: 52, left: "calc(100% + 8px)", zIndex: 40, width: 260, padding: 6, display: "grid", gap: 3, background: "var(--bg-panel)", border: "1px solid var(--border)", borderRadius: "var(--radius-control)", boxShadow: "var(--shadow-pop)" }}
+              style={{ position: "absolute", top: 44, left: "calc(100% + 8px)", zIndex: 40, width: 260, padding: 6, display: "grid", gap: 3, background: "var(--bg-panel)", border: "1px solid var(--border)", borderRadius: "var(--radius-control)", boxShadow: "var(--shadow-pop)" }}
             >
+              <button type="button" role="menuitem" onClick={() => { setSidebarMenuOpen(false); setSettingsMenuOpen(false); void createConversation(); }} disabled={submitting} style={{ ...primaryButtonStyle, minHeight: 32, justifyContent: "flex-start", gap: 7 }}><MessageSquarePlus size={15} />新研究会话</button>
               <div style={{ display: "flex", alignItems: "end", gap: 6, padding: "2px 1px 7px", borderBottom: "1px solid var(--border)" }}>
                 <label style={{ display: "grid", gap: 3, flex: 1, minWidth: 0, color: "var(--text-muted)", fontSize: 11 }}>
                   主题颜色
@@ -539,7 +540,7 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
           )}
         </div>
         <div style={{ padding: 12 }}><button onClick={() => void createConversation()} disabled={submitting} style={{ ...primaryButtonStyle, width: "100%", display: "flex", justifyContent: "center", gap: 7 }}><MessageSquarePlus size={16} />新研究会话</button></div>
-        <nav aria-label="研究会话" style={{ overflowY: "auto", padding: "0 8px 12px", flex: 1 }}>
+        <nav aria-label="研究会话" style={{ overflowY: "auto", padding: "0 8px 8px", flex: 1 }}>
           {conversations.map((item) => {
             const deleting = deletingConversationId === item.id;
             return (
@@ -547,10 +548,10 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
                 <button
                   onClick={() => void selectConversation(item.id)}
                   disabled={deleting}
-                  style={{ width: "100%", textAlign: "left", padding: "10px 40px 10px 11px", border: "none", borderRadius: "var(--radius-control)", background: active?.id === item.id ? "var(--bg-selected)" : "transparent", color: "var(--text)", cursor: deleting ? "wait" : "pointer" }}
+                  style={{ width: "100%", textAlign: "left", padding: "8px 40px 8px 10px", border: "none", borderRadius: "var(--radius-control)", background: active?.id === item.id ? "var(--bg-selected)" : "transparent", color: "var(--text)", cursor: deleting ? "wait" : "pointer" }}
                 >
                   <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 13, fontWeight: active?.id === item.id ? 600 : 400 }}>{item.title || "未命名研究会话"}</div>
-                  <div style={{ marginTop: 4, color: "var(--text-dim)", fontSize: 11 }}>{formatDate(item.updated_at)}</div>
+                  <div style={{ marginTop: 2, color: "var(--text-dim)", fontSize: 11 }}>{formatDate(item.updated_at)}</div>
                 </button>
                 <button
                   type="button"
@@ -587,9 +588,9 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
         />
       )}
       <section className="academate-main-panel" style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column" }}>
-        <style>{".academate-main-panel > form:last-of-type { order: 3; }"}</style>
+        <style>{".academate-main-panel > form:last-of-type { order: 3; } .academate-sidebar-content > div:nth-child(2) { display: none; } .academate-session-titlebar .shell-toolbar-btn, .academate-session-titlebar > div > div:last-child { display: none; } .academate-session-titlebar .display-serif { font-size: 15px !important; }"}</style>
         {!isPersonalArea && <>
-        <header style={{ display: "none" }}>
+        <header className="academate-session-titlebar" style={{ minHeight: 42, flexShrink: 0, display: "flex", alignItems: "center", padding: "0 18px", borderBottom: "1px solid var(--border)", background: "var(--bg-panel)" }}>
           <button
             type="button"
             onClick={() => { setSidebarOpen((open) => !open); setSidebarMenuOpen(false); }}
