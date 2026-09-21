@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useLayoutEffect, useState, useCallback, useRef, useMemo, useDeferredValue } from "react";
+import { memo, useEffect, useLayoutEffect, useState, useCallback, useRef, useMemo, useDeferredValue, type ReactNode } from "react";
 import type { ManagedProject, ProjectLaunchConfig, SessionInfo } from "@/lib/types";
 import { useI18n } from "@/lib/i18n";
 import { formatApiError } from "@/lib/i18n/api-error";
@@ -71,6 +71,8 @@ interface Props {
   onOpenArchive?: () => void;
   /** True when settings full-page view is currently open. */
   settingsOpen?: boolean;
+  /** App-wide controls placed in the sidebar header. */
+  topMenu?: ReactNode;
 }
 
 
@@ -78,7 +80,7 @@ interface Props {
 
 
 
-export const SessionSidebar = memo(function SessionSidebar({ selectedSessionId, optimisticSession, onSelectSession, onNewSession, initialSessionId, skipInitialProjectSelection, onInitialRestoreDone, refreshKey, onSessionDeleted, selectedCwd: selectedCwdProp, onCwdChange, onWorkspaceOptionsChange, addProjectOpen, setAddProjectOpen, usageVisible = true, onOpenSettings, onOpenArchive, updateAvailable, settingsOpen = false }: Props) {
+export const SessionSidebar = memo(function SessionSidebar({ selectedSessionId, optimisticSession, onSelectSession, onNewSession, initialSessionId, skipInitialProjectSelection, onInitialRestoreDone, refreshKey, onSessionDeleted, selectedCwd: selectedCwdProp, onCwdChange, onWorkspaceOptionsChange, addProjectOpen, setAddProjectOpen, usageVisible = true, onOpenSettings, onOpenArchive, updateAvailable, settingsOpen = false, topMenu }: Props) {
 
 
   const { t } = useI18n();
@@ -1216,6 +1218,7 @@ export const SessionSidebar = memo(function SessionSidebar({ selectedSessionId, 
             </Tooltip>
           </div>
         </div>
+        {topMenu}
         <input
           ref={importInputRef}
           type="file"
@@ -1473,7 +1476,6 @@ export const SessionSidebar = memo(function SessionSidebar({ selectedSessionId, 
     </div>
   );
 });
-
 
 
 

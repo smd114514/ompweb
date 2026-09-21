@@ -145,8 +145,6 @@ interface Props {
   onMinimize?: () => void;
   /** Active status label attached to the composer's top edge (e.g. "Waiting for model..."). */
   statusText?: string | null;
-  /** Open Settings → API Keys & Providers from the model picker footer. */
-  onOpenProviders?: () => void;
 }
 
 export interface ChatInputHandle {
@@ -262,7 +260,6 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, Props>(function ChatIn
   onAdvisorChange,
   onMinimize,
   statusText,
-  onOpenProviders,
 }: Props, ref) {
   const isMobile = useIsMobile();
   const { t, tn, locale } = useI18n();
@@ -2620,10 +2617,6 @@ export const ChatInput = memo(forwardRef<ChatInputHandle, Props>(function ChatIn
                           }
                         }}
                         onClose={() => setModelDropdownOpen(false)}
-                        onOpenProviders={onOpenProviders ? () => {
-                          setModelDropdownOpen(false);
-                          onOpenProviders();
-                        } : undefined}
                       />
                     </div>
                 )}

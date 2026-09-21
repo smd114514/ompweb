@@ -2176,17 +2176,6 @@ span.token.table {
 .picker-provider-row {
   gap: 7px;
 }
-.picker-add-providers {
-  margin: 0;
-  border-top: 1px solid var(--border);
-  border-radius: 0;
-  color: var(--text-muted);
-  min-height: 34px;
-}
-.picker-add-providers:hover,
-.picker-add-providers:focus-visible {
-  color: var(--text);
-}
 .picker-empty {
   padding: 10px 8px;
   color: var(--text-dim);
@@ -2866,18 +2855,6 @@ html.dark .dropdown-surface :is(select, option) {
   flex-wrap: nowrap;
   justify-content: space-between;
 }
-.shell-topbar-overflow {
-  display: contents;
-}
-.shell-topbar-overflow > summary {
-  display: none;
-}
-.shell-topbar-overflow-content {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 100%;
-}
 .shell-topbar-center {
   position: absolute;
   top: 4.5px;
@@ -2911,50 +2888,101 @@ html.dark .dropdown-surface :is(select, option) {
   .shell-topbar-tools {
     gap: 2px !important;
   }
-  .shell-topbar .shell-toolbar-divider {
-    margin: 0;
-  }
   .shell-topbar [data-topbar-right-group] {
     padding: 0 !important;
   }
-  .shell-topbar-overflow[data-compact="pending"] {
-    display: block;
-  }
-  .shell-topbar-overflow[data-compact="pending"] > summary {
-    display: flex;
-    list-style: none;
-  }
-  .shell-topbar-overflow[data-compact="pending"] > .shell-topbar-overflow-content {
-    display: none;
-  }
 }
 
-.shell-topbar-overflow[data-compact="true"] {
-  display: block;
-}
-.shell-topbar-overflow[data-compact="true"] > summary {
-  display: flex;
-  list-style: none;
-}
-.shell-topbar-overflow > summary::-webkit-details-marker {
-  display: none;
-}
-.shell-topbar-overflow[data-compact="true"]:not([open]) > .shell-topbar-overflow-content {
-  display: none;
-}
-.shell-topbar-overflow[data-compact="true"] > .shell-topbar-overflow-content {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 4px;
-  right: 4px;
-  height: 48px;
-  gap: 4px;
-  padding: 4px;
-  z-index: 500;
-  background: var(--bg-panel);
+/* The app menu lives in the sidebar header, where it remains reachable even
+ * when the main navigation is collapsed. Its contents expand in place so the
+ * sidebar's overflow boundary cannot clip a floating surface. */
+.sidebar-app-menu {
   border: 1px solid var(--border);
   border-radius: var(--radius-control);
-  box-shadow: var(--shadow-pop);
+  background: var(--bg-subtle);
+}
+.sidebar-app-menu > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 9px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  list-style: none;
+}
+.sidebar-app-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.sidebar-app-menu > summary:hover {
+  background: var(--bg-hover);
+  border-radius: var(--radius-control);
+}
+.sidebar-app-menu[open] > summary {
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-control) var(--radius-control) 0 0;
+}
+.sidebar-app-menu-content {
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+}
+.sidebar-app-menu-preferences {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sidebar-app-menu-divider {
+  height: 1px;
+  margin: 2px 0;
+  background: var(--border);
+}
+.sidebar-app-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 30px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+}
+.sidebar-app-menu-item:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+.sidebar-app-menu-item:disabled {
+  color: var(--text-dim);
+  cursor: not-allowed;
+}
+.sidebar-app-menu-system {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-panel);
+}
+.sidebar-app-menu-system-content {
+  max-height: min(360px, 42vh);
+  overflow: auto;
+  padding: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.sidebar-app-menu-system-empty {
+  padding: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
 }
 
 @container topbar-speed (width < calc(10ch + 33px)) {

@@ -206,7 +206,7 @@ test("nested model picker groups by provider and pins the current provider first
   assert.deepEqual(ordered.map((g) => g.provider), ["openai", "anthropic", "pi"]);
 });
 
-test("model picker panel renders providers rail, models pane, and Add Providers", async () => {
+test("model picker panel renders providers rail and models pane without settings shortcut", async () => {
   const { ModelPickerPanel } = await jiti.import("./ChatInput-model-picker.tsx");
   const html = renderToStaticMarkup(
     React.createElement(ModelPickerPanel, {
@@ -225,7 +225,6 @@ test("model picker panel renders providers rail, models pane, and Add Providers"
       onSearchQueryChange() {},
       isMobile: false,
       onSelectModel() {},
-      onOpenProviders() {},
     }),
   );
 
@@ -235,7 +234,7 @@ test("model picker panel renders providers rail, models pane, and Add Providers"
   assert.match(html, /GPT-5\.6 Terra/);
   assert.match(html, />codex</);
   assert.match(html, />pi</);
-  assert.match(html, />(Add Providers|chatInput\.addProviders)</);
+  assert.doesNotMatch(html, /picker-add-providers/);
 });
 
 

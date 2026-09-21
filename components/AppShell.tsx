@@ -15,7 +15,7 @@ import { type FileExplorerHandle } from "./FileExplorer";
 import type { RightPanelView } from "./RightPanel";
 import { BranchNavigator } from "./BranchNavigator";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { Check, Ellipsis, Folder, History, Menu, PanelLeft, Terminal, Wand2, Zap } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Folder, History, Menu, PanelLeft, Terminal, Wand2, Zap } from "lucide-react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { translate, useI18n } from "@/lib/i18n";
 import { formatApiError } from "@/lib/i18n/api-error";
@@ -99,7 +99,7 @@ export function AppShell() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [initialNavigation] = useState(() => getInitialNavigation(searchParams));
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const isMobile = useIsMobile();
   const [selectedSession, setSelectedSession] = useState<SessionInfo | null>(null);
   // When user clicks +, we only store the cwd — no fake session id
@@ -611,7 +611,6 @@ export function AppShell() {
     window.requestAnimationFrame(() => setAppUpdateDialogOpen(true));
   }, [resetAppUpdateVisibleStage]);
   const chatInputRef = useRef<ChatInputHandle | null>(null);
-  const topBarRef = useRef<HTMLDivElement>(null);
 
   // Branch navigator state — populated by ChatWindow via onBranchDataChange
   const [branchTree, setBranchTree] = useState<SessionTreeNode[]>([]);
@@ -666,44 +665,11 @@ export function AppShell() {
 
   // Single active panel — only one dropdown open at a time
   const [activeTopPanel, setActiveTopPanel] = useState<"branches" | "system" | null>(null);
-  const mobileToolsRef = useRef<HTMLDetailsElement>(null);
-  const mobileToolsContentRef = useRef<HTMLDivElement>(null);
-  const restoreToolsFocusRef = useRef(false);
-  const [compactTopbar, setCompactTopbar] = useState<boolean | null>(null);
-  useLayoutEffect(() => {
-    if (compactTopbar && restoreToolsFocusRef.current) {
-      mobileToolsRef.current?.querySelector("summary")?.focus();
-      restoreToolsFocusRef.current = false;
-    }
-  }, [compactTopbar]);
-  useEffect(() => {
-    if (!compactTopbar) return;
-    const closeOnOutside = (event: PointerEvent) => {
-      const tools = mobileToolsRef.current;
-      if (tools?.open && !tools.contains(event.target as Node)) {
-        tools.open = false;
-        setActiveTopPanel(null);
-      }
-    };
-    const closeOnEscape = (event: KeyboardEvent) => {
-      const tools = mobileToolsRef.current;
-      // Nested pickers and session panels handle their own Escape first.
-      if (event.key !== "Escape" || event.defaultPrevented || activeTopPanel || !tools?.open) return;
-      event.stopPropagation();
-      tools.open = false;
-      tools.querySelector("summary")?.focus();
-    };
-    document.addEventListener("pointerdown", closeOnOutside);
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("pointerdown", closeOnOutside);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [compactTopbar, activeTopPanel]);
+  const sidebarMenuRef = useRef<HTMLDetailsElement>(null);
+  const sidebarMenuContentRef = useRef<HTMLDivElement>(null);
   const toggleTopPanel = useCallback((panel: "branches" | "system") => {
-    if (isMobile) setSidebarOpen(false);
     setActiveTopPanel((cur) => cur === panel ? null : panel);
-  }, [isMobile]);
+  }, []);
 
   // Generation speed — current live t/s and the session average.
   const [generationSpeed, setGenerationSpeed] = useState<GenerationSpeedInfo | null>(null);
@@ -733,7 +699,10 @@ export function AppShell() {
   }, []);
 
   const handleSidebarToggle = useCallback(() => {
-    if (isMobile) setActiveTopPanel(null);
+    if (isMobile) {
+      setActiveTopPanel(null);
+      if (sidebarMenuRef.current) sidebarMenuRef.current.open = false;
+    }
     setSidebarOpen((open) => !open);
   }, [isMobile]);
 
@@ -1400,59 +1369,6 @@ export function AppShell() {
   const rate = currentRate ?? generationSpeed?.average;
   const speed = showChat ? formatGenerationSpeed(rate) : null;
   const hasGenerationSpeed = speed !== null;
-  useLayoutEffect(() => {
-    const header = topBarRef.current;
-    const details = mobileToolsRef.current;
-    const content = mobileToolsContentRef.current;
-    const right = header?.querySelector<HTMLElement>("[data-topbar-right-group]");
-    const tools = header?.querySelector<HTMLElement>(".shell-topbar-tools");
-    if (!header || !details || !content || !right || !tools) return;
-    const update = () => {
-      const hadControlsFocus = content.contains(document.activeElement);
-      // Measure the real controls even while their disclosure is closed.
-      const closed = !details.open;
-      const display = content.style.display;
-      const visibility = content.style.visibility;
-      content.style.visibility = "hidden";
-      content.style.display = "flex";
-      details.open = true;
-      const children = Array.from(content.children).filter((child) =>
-        !["absolute", "fixed"].includes(getComputedStyle(child).position));
-      const contentStyle = getComputedStyle(content);
-      const headerStyle = getComputedStyle(header);
-      const rightStyle = getComputedStyle(right);
-      const controlsWidth = children.reduce((width, child) => {
-        const style = getComputedStyle(child);
-        return width + child.getBoundingClientRect().width
-          + parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-      }, 0) + Math.max(0, children.length - 1) * parseFloat(contentStyle.columnGap);
-      const required = controlsWidth
-        + (tools.firstElementChild?.getBoundingClientRect().width ?? 0)
-        + parseFloat(getComputedStyle(tools).columnGap)
-        + parseFloat(headerStyle.paddingLeft) + parseFloat(headerStyle.paddingRight)
-        + parseFloat(headerStyle.columnGap)
-        + parseFloat(rightStyle.minWidth)
-        + parseFloat(rightStyle.paddingLeft) + parseFloat(rightStyle.paddingRight);
-      if (closed) details.open = false;
-      content.style.display = display;
-      content.style.visibility = visibility;
-      const compact = required > header.clientWidth;
-      if (compact && details.dataset.compact !== "true" && hadControlsFocus) {
-        restoreToolsFocusRef.current = true;
-      }
-      setCompactTopbar(compact);
-    };
-    const observer = new ResizeObserver(update);
-    observer.observe(header);
-    observer.observe(content);
-    for (const child of content.children) observer.observe(child);
-    document.fonts.addEventListener("loadingdone", update);
-    update();
-    return () => {
-      observer.disconnect();
-      document.fonts.removeEventListener("loadingdone", update);
-    };
-  }, [hasGenerationSpeed, isMobile, locale, rightPanelOpen, showChat]);
   // While restoring initial session from URL, don't show the placeholder
   const showPlaceholder = initialSessionRestored && !showChat;
 
@@ -1483,6 +1399,73 @@ export function AppShell() {
     return () => observer.disconnect();
   }, [windowTitle]);
 
+  const sidebarMenu = (
+    <details
+      ref={sidebarMenuRef}
+      className="sidebar-app-menu"
+      onToggle={(event) => {
+        if (!event.currentTarget.open) setActiveTopPanel(null);
+      }}
+    >
+      <summary className="sidebar-app-menu-trigger ui-focus-ring" aria-label={t("appShell.menu")}>
+        <Menu size={16} strokeWidth={1.8} aria-hidden="true" />
+        <span>{t("appShell.menu")}</span>
+      </summary>
+      <div ref={sidebarMenuContentRef} className="sidebar-app-menu-content">
+        <div className="sidebar-app-menu-preferences">
+          <ThemeSwitcher />
+          <LanguageSwitcher />
+        </div>
+        {showChat && (
+          <>
+            <div className="sidebar-app-menu-divider" aria-hidden="true" />
+            <button
+              onClick={handleViewFullHistory}
+              disabled={!selectedSession}
+              title={selectedSession ? t("appShell.fullHistory") : t("appShell.fullHistoryUnavailable")}
+              className="sidebar-app-menu-item ui-focus-ring"
+            >
+              <History size={16} strokeWidth={1.8} aria-hidden="true" />
+              <span>{t("appShell.fullHistory")}</span>
+            </button>
+            <BranchNavigator
+              tree={branchTree}
+              activeLeafId={branchActiveLeafId}
+              onLeafChange={handleBranchLeafChange}
+              inline
+              containerRef={sidebarMenuContentRef}
+              open={activeTopPanel === "branches"}
+              onToggle={() => toggleTopPanel("branches")}
+              hasSession
+            />
+            <button
+              ref={systemBtnRef}
+              onClick={handleSystemPromptToggle}
+              aria-pressed={activeTopPanel === "system"}
+              className="sidebar-app-menu-item ui-focus-ring"
+            >
+              <Terminal size={16} strokeWidth={1.8} aria-hidden="true" style={{ color: systemPrompt ? "var(--accent)" : undefined }} />
+              <span>{t("appShell.system")}</span>
+            </button>
+          </>
+        )}
+        {activeTopPanel === "system" && (
+          <div data-top-panel className="sidebar-app-menu-system session-info-popover">
+            {systemPrompt ? (
+              <div className="sidebar-app-menu-system-content">{systemPrompt}</div>
+            ) : systemPrompt === "" ? (
+              <div className="sidebar-app-menu-system-empty">{t("appShell.systemPromptEmpty")}</div>
+            ) : (
+              <div className="sidebar-app-menu-system-empty">
+                {systemPromptLoading ? t("appShell.systemPromptLoading") : t("appShell.systemPromptLoadHint")}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </details>
+  );
+
   const sidebarContent = (
     <SessionSidebar
       selectedSessionId={selectedSession?.id ?? null}
@@ -1504,6 +1487,7 @@ export function AppShell() {
       onOpenSettings={() => setSettingsTab((prev) => prev ? null : "general")}
       onOpenArchive={() => setArchiveBrowserOpen(true)}
       updateAvailable={Boolean(appUpdate?.updateAvailable) || ompUpdateAvailable}
+      topMenu={sidebarMenu}
     />
   );
 
@@ -1699,7 +1683,7 @@ export function AppShell() {
         ) : (
           <>
         {/* Top bar: 3-zone segmented control bar */}
-        <div ref={topBarRef} className="shell-topbar" style={{
+        <div className="shell-topbar" style={{
           position: "relative",
           alignItems: "center",
           flexShrink: 0,
@@ -1710,7 +1694,7 @@ export function AppShell() {
           gap: "0 8px",
           minWidth: 0,
         }}>
-          {/* Left Zone: Utility group (sidebar, theme, language) & session controls (history, branches, system) */}
+          {/* Left zone: Windows-style sidebar toggle and browser history controls. */}
           <div className="shell-topbar-tools" style={{ display: "flex", alignItems: "center", gap: 4, height: isMobile ? 43 : 35, minWidth: 0, flexShrink: 0 }}>
             <button
               onClick={handleSidebarToggle}
@@ -1718,110 +1702,24 @@ export function AppShell() {
               aria-label={sidebarOpen ? t("appShell.hideSidebar") : t("appShell.showSidebar")}
               className="shell-toolbar-btn ui-focus-ring"
             >
-              {sidebarOpen ? <PanelLeft size={16} strokeWidth={1.8} aria-hidden="true" /> : <Menu size={16} strokeWidth={1.8} aria-hidden="true" />}
+              <PanelLeft size={16} strokeWidth={1.8} aria-hidden="true" />
             </button>
-            <details
-              ref={mobileToolsRef}
-              className="shell-topbar-overflow"
-              data-compact={compactTopbar === null ? "pending" : compactTopbar}
-              open={compactTopbar ? undefined : true}
-              onToggle={(event) => {
-                if (!event.currentTarget.open) setActiveTopPanel(null);
-              }}
+            <button
+              onClick={() => router.back()}
+              title={t("appShell.back")}
+              aria-label={t("appShell.back")}
+              className="shell-toolbar-btn ui-focus-ring"
             >
-              <summary
-                className="shell-toolbar-btn ui-focus-ring"
-                title={t("chatInput.moreControls")}
-                aria-label={t("chatInput.moreControls")}
-              >
-                <Ellipsis size={16} strokeWidth={1.8} aria-hidden="true" />
-              </summary>
-              <div ref={mobileToolsContentRef} className="shell-topbar-overflow-content">
-            <ThemeSwitcher />
-            <LanguageSwitcher />
-            {showChat && (
-              <>
-                <div className="shell-toolbar-divider" aria-hidden="true" />
-                <button
-                  onClick={handleViewFullHistory}
-                  disabled={!selectedSession}
-                  title={selectedSession ? t("appShell.fullHistory") : t("appShell.fullHistoryUnavailable")}
-                  aria-label={t("appShell.fullHistory")}
-                  className="shell-toolbar-btn ui-focus-ring"
-                >
-                  <History size={16} strokeWidth={1.8} aria-hidden="true" />
-                </button>
-                <BranchNavigator
-                  tree={branchTree}
-                  activeLeafId={branchActiveLeafId}
-                  onLeafChange={handleBranchLeafChange}
-                  inline
-                  containerRef={compactTopbar ? mobileToolsContentRef : topBarRef}
-                  open={activeTopPanel === "branches"}
-                  onToggle={() => toggleTopPanel("branches")}
-                  hasSession
-                />
-                <button
-                  ref={systemBtnRef}
-                  onClick={handleSystemPromptToggle}
-                  title={t("appShell.system")}
-                  aria-label={t("appShell.system")}
-                  aria-pressed={activeTopPanel === "system"}
-                  className="shell-toolbar-btn ui-focus-ring"
-                >
-                  <Terminal size={16} strokeWidth={1.8} aria-hidden="true" style={{ color: systemPrompt ? "var(--accent)" : undefined }} />
-                </button>
-              </>
-            )}
-          {activeTopPanel === "system" && (
-            <div data-top-panel className="dropdown-surface" style={{
-              position: "absolute",
-              top: "calc(100% + 4px)",
-              left: isMobile ? 4 : 8,
-              right: "auto",
-              width: "auto",
-              minWidth: isMobile ? undefined : 420,
-              maxWidth: "min(680px, calc(100vw - 24px))",
-              maxHeight: "min(70vh, calc(100dvh - 56px))",
-              overflowY: "auto",
-              overflowX: "hidden",
-              zIndex: 500,
-            }}>
-              {activeTopPanel === "system" && (
-                <div className="session-info-popover" style={{
-                  background: "var(--bg-panel)",
-                  borderBottom: "1px solid var(--border)",
-                  boxShadow: "var(--shadow-pop)",
-                  minWidth: isMobile ? undefined : 420,
-                }}>
-                  {systemPrompt ? (
-                    <div style={{
-                      maxHeight: "min(600px, 75vh)",
-                      overflowY: "auto",
-                      padding: "12px 16px",
-                      color: "var(--text-muted)",
-                      fontSize: 12,
-                      lineHeight: 1.6,
-                      whiteSpace: "pre-wrap",
-                      fontFamily: "var(--font-mono)",
-                    }}>
-                      {systemPrompt}
-                    </div>
-                  ) : systemPrompt === "" ? (
-                    <div style={{ padding: "10px 16px", fontSize: 12, color: "var(--text-muted)", fontStyle: "italic" }}>
-                      {t("appShell.systemPromptEmpty")}
-                    </div>
-                  ) : (
-                    <div style={{ padding: "10px 16px", fontSize: 12, color: "var(--text-muted)", fontStyle: "italic" }}>
-                      {systemPromptLoading ? t("appShell.systemPromptLoading") : t("appShell.systemPromptLoadHint")}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-              </div>
-            </details>
+              <ChevronLeft size={17} strokeWidth={1.8} aria-hidden="true" />
+            </button>
+            <button
+              onClick={() => router.forward()}
+              title={t("appShell.forward")}
+              aria-label={t("appShell.forward")}
+              className="shell-toolbar-btn ui-focus-ring"
+            >
+              <ChevronRight size={17} strokeWidth={1.8} aria-hidden="true" />
+            </button>
           </div>
 
           {/* Center Zone: Workspace & Session Breadcrumb + Auto-name action */}
@@ -2087,7 +1985,6 @@ export function AppShell() {
               onSessionStatsChange={handleSessionStatsChange}
               onSessionStatsPanelOpen={openSessionStatsPanel}
               onGenerationSpeedChange={handleGenerationSpeedChange}
-              onOpenProviders={() => setSettingsTab("providers")}
               toolCallsDefaultCollapsed={toolCallsDefaultCollapsed}
             />
           ) : initialCwdStatus === "validating" ? (

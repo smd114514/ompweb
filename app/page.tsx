@@ -1,10 +1,5 @@
-import { Suspense } from "react";
-import { AppShell } from "@/components/AppShell";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <Suspense>
-      <AppShell />
-    </Suspense>
-  );
+  redirect("/academate");
 }

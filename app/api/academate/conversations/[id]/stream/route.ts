@@ -7,16 +7,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const { id: rawId } = await params;
   const id = positiveId(rawId);
   if (!id) return NextResponse.json({ message: "无效的会话编号" }, { status: 400 });
-  let body: { message?: unknown };
+  let body: { message?: unknown; upload_id?: unknown };
   try { body = await request.json(); } catch { return NextResponse.json({ message: "请求内容不是有效 JSON" }, { status: 400 }); }
   const message = typeof body.message === "string" ? body.message.trim() : "";
+  const uploadId = typeof body.upload_id === "string" ? body.upload_id.trim() : "";
   if (!message) return NextResponse.json({ message: "消息不能为空" }, { status: 400 });
 
   try {
     const upstream = await academateFetch(`/api/conversations/${id}/messages/stream`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, ...(uploadId ? { upload_id: uploadId } : {}) }),
       signal: request.signal,
     });
     if (!upstream.ok || !upstream.body) {

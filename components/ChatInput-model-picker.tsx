@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Check, ChevronLeft, ChevronRight, Plus, Search } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { providerInitials } from "./ModelsConfig-types";
 import type { ModelOption } from "./ChatInput-model-options";
@@ -73,7 +73,6 @@ export interface ModelPickerPanelProps {
   showModelsLoading?: boolean;
   isMobile?: boolean;
   onSelectModel: (provider: string, modelId: string) => void;
-  onOpenProviders?: () => void;
   onClose?: () => void;
 }
 
@@ -91,7 +90,6 @@ export function ModelPickerPanel({
   showModelsLoading,
   isMobile,
   onSelectModel,
-  onOpenProviders,
   onClose,
 }: ModelPickerPanelProps) {
   const { t } = useI18n();
@@ -242,19 +240,6 @@ export function ModelPickerPanel({
           </div>
         )}
       </div>
-
-      {onOpenProviders && (
-        <button
-          type="button"
-          className="picker-row picker-add-providers"
-          onClick={() => {
-            onOpenProviders();
-          }}
-        >
-          <Plus size={13} strokeWidth={1.8} aria-hidden="true" />
-          <span>{t("chatInput.addProviders")}</span>
-        </button>
-      )}
     </>
   );
 }

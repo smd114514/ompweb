@@ -43,12 +43,12 @@ const notoSerifSC = Noto_Serif_SC({
 });
 
 export const metadata: Metadata = {
-  title: "OMP",
-  description: "OMP 编程助手",
+  title: "AcadMate",
+  description: "AcadMate 科研对话工作台",
   // PWA-like behavior on iOS: standalone chrome, no telephone autodetect.
   appleWebApp: {
     capable: true,
-    title: "omp web",
+    title: "AcadMate",
     statusBarStyle: "default",
   },
   formatDetection: {

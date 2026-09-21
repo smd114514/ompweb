@@ -48,6 +48,9 @@ const nextConfig = (phase: string): NextConfig => {
     // earlier. Source maps in the browser bundle leak server path layout and
     // bloat downloads without helping end users of a published app.
     poweredByHeader: false,
+    // The black "N" bubble is Next.js Devtools, not AcadMate UI. Hide it so
+    // development mode matches the app's intended production interface.
+    devIndicators: false,
     reactStrictMode: true,
     productionBrowserSourceMaps: false,
     // Next.js enables gzip/brotli compression for `next start` by default; no
