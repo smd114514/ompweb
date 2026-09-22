@@ -96,6 +96,7 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
   const [deletingConversationId, setDeletingConversationId] = useState<number | null>(null);
   const [pdfAttachment, setPdfAttachment] = useState<PdfAttachment | null>(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [pdfAgentNotice, setPdfAgentNotice] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     if (typeof window === "undefined") return SIDEBAR_DEFAULT_WIDTH;
@@ -313,10 +314,19 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
       if (!response.ok || typeof payload.upload_id !== "string") {
         throw new Error(typeof payload.message === "string" ? payload.message : "PDF 上传失败");
       }
-      setPdfAttachment({
+      const attachment = {
         uploadId: payload.upload_id,
         filename: typeof payload.filename === "string" && payload.filename.trim() ? payload.filename : file.name,
-      });
+      };
+      setPdfAttachment(attachment);
+      setPdfAgentNotice("已上传，正在提交给文档智能体分析…");
+      void fetch(`/api/academate/documents/${encodeURIComponent(attachment.uploadId)}/analyze`, { method: "POST" })
+        .then(async (analysisResponse) => {
+          const analysis = await analysisResponse.json().catch(() => ({})) as { message?: unknown };
+          if (!analysisResponse.ok) throw new Error(typeof analysis.message === "string" ? analysis.message : "文档智能体暂时不可用");
+          setPdfAgentNotice("已提交给文档智能体；你仍可立即带着附件开始研究对话。");
+        })
+        .catch((analysisError: unknown) => setPdfAgentNotice(`附件已上传，但未能启动文档智能体：${analysisError instanceof Error ? analysisError.message : "未知错误"}`));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "PDF 上传失败");
     } finally {
@@ -354,6 +364,7 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
         throw new Error(typeof payload.message === "string" ? payload.message : "无法发起研究对话");
       }
       setPdfAttachment(null);
+      setPdfAgentNotice(null);
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let remainder = "";
@@ -665,13 +676,14 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
           {pdfAttachment ? (
             <span title={pdfAttachment.filename} style={{ minWidth: 0, display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 7px 5px 9px", borderRadius: "var(--radius-control)", background: "var(--bg-subtle)", color: "var(--text-muted)", fontSize: 12 }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}>{pdfAttachment.filename}</span>
-              <button type="button" onClick={() => setPdfAttachment(null)} aria-label="移除 PDF 附件" title="移除 PDF 附件" style={{ display: "grid", width: 18, height: 18, padding: 0, placeItems: "center", border: 0, borderRadius: 4, background: "transparent", color: "inherit", cursor: "pointer" }}>
+              <button type="button" onClick={() => { setPdfAttachment(null); setPdfAgentNotice(null); }} aria-label="移除 PDF 附件" title="移除 PDF 附件" style={{ display: "grid", width: 18, height: 18, padding: 0, placeItems: "center", border: 0, borderRadius: 4, background: "transparent", color: "inherit", cursor: "pointer" }}>
                 <X size={14} />
               </button>
             </span>
           ) : (
             <span style={{ color: "var(--text-muted)", fontSize: 12 }}>可与文字一起检索</span>
           )}
+          {pdfAgentNotice && <span style={{ color: "var(--text-muted)", fontSize: 12 }}>{pdfAgentNotice}</span>}
         </div>
         </>}
         {isPersonalArea && (settingsOpen || emailSettingsOpen) && (
