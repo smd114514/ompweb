@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, Brain, ChevronLeft, ChevronRight, CircleUserRound, Code2, ExternalLink, FileText, Flame, GitFork, LogOut, Mail, Menu, MessageSquarePlus, Orbit, Paperclip, PanelLeft, Send, Settings, Trash2, X } from "lucide-react";
+import { BookOpen, Brain, ChevronLeft, ChevronRight, CircleUserRound, Code2, ExternalLink, FileText, Flame, GitFork, LogOut, Mail, Menu, MessageSquarePlus, Orbit, Paperclip, PanelLeft, Plus, Send, Settings, Trash2, X } from "lucide-react";
 import { AcadMateDocuments } from "@/components/AcadMateDocuments";
 import { AcadMateCloud } from "@/components/AcadMateCloud";
 import { AcadMateHotTopics } from "@/components/AcadMateHotTopics";
@@ -66,7 +66,7 @@ function formatDate(value: string): string {
 export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const isProfilePage = pathname === "/academate/profile";
+  const isProfilePage = pathname === "/academate/profile" || pathname === "/academate/profile/research" || pathname === "/academate/profile/growth";
   const isDocumentsPage = pathname === "/academate/files";
   const isMemoryPage = pathname === "/academate/memory";
   const isHotTopicsPage = pathname === "/academate/hot-topics";
@@ -458,6 +458,17 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
         <button type="button" onClick={() => { setSidebarOpen((open) => !open); setSidebarMenuOpen(false); setExternalLinksMenuOpen(false); }} title={sidebarOpen ? "隐藏侧边栏" : "切换侧边栏"} aria-label={sidebarOpen ? "隐藏侧边栏" : "切换侧边栏"} className="shell-toolbar-btn ui-focus-ring"><PanelLeft size={17} strokeWidth={1.8} aria-hidden="true" /></button>
         <button type="button" onClick={() => window.history.back()} title="返回" aria-label="返回" className="shell-toolbar-btn ui-focus-ring"><ChevronLeft size={18} strokeWidth={1.8} aria-hidden="true" /></button>
         <button type="button" onClick={() => window.history.forward()} title="前进" aria-label="前进" className="shell-toolbar-btn ui-focus-ring"><ChevronRight size={18} strokeWidth={1.8} aria-hidden="true" /></button>
+        <button
+          type="button"
+          onClick={() => void createConversation()}
+          disabled={submitting}
+          title="新研究会话"
+          aria-label="新研究会话"
+          className="shell-toolbar-btn ui-focus-ring"
+          style={{ marginLeft: "auto" }}
+        >
+          <Plus size={18} strokeWidth={2} aria-hidden="true" />
+        </button>
       </header>
       <div style={{ minHeight: 0, flex: 1, display: "flex" }}>
       <aside
@@ -711,7 +722,7 @@ export function AcadMateWorkspace({ children }: { children?: ReactNode }) {
             </div>
           </div>
         )}
-        {isProfilePage && <AcadMateProfile />}
+        {isProfilePage && <AcadMateProfile page={pathname === "/academate/profile/research" ? "research" : pathname === "/academate/profile/growth" ? "growth" : "information"} />}
         {isDocumentsPage && <AcadMateDocuments />}
         {isMemoryPage && <AcadMateMemory />}
         {isHotTopicsPage && <AcadMateHotTopics />}

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "个人中心 · AcadMate",
-  description: "AcadMate 个人资料、科研画像与成长记录",
+  title: "个人信息 · AcadMate",
+  description: "AcadMate 个人信息",
 };
 
 export default function AcadMateProfilePage() {
